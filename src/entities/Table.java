@@ -1,15 +1,18 @@
-public class Table {
+package entities;
 
-    private int tableNumber;
+import java.util.Objects;
+
+public final class Table {
+    private final int tableNumber;
     private Customer customer;
 
-    //declaration
     public Table(int tableNumber) {
+        if (tableNumber < 1) {
+            throw new IllegalArgumentException("tableNumber must be positive");
+        }
         this.tableNumber = tableNumber;
-        this.customer = null;
     }
 
-    //getters
     public int getTableNumber() {
         return tableNumber;
     }
@@ -18,31 +21,35 @@ public class Table {
         return customer;
     }
 
-    // check if it is occupied
     public boolean isOccupied() {
         return customer != null;
     }
 
     public void seatCustomer(Customer customer) {
-        if (!isOccupied()) {
-            this.customer = customer;
-            customer.setTable(this);
-            customer.setStatus(CustomerStatus.SEATED);
+        if (isOccupied()) {
+            throw new IllegalStateException("table is already occupied");
+        }
+        Customer arrivingCustomer = Objects.requireNonNull(
+                customer,
+                "customer cannot be null");
+        arrivingCustomer.markSeated(this);
+        this.customer = arrivingCustomer;
+    }
+
+    public void freeTable() {
+        if (customer != null) {
+            Customer leavingCustomer = customer;
+            customer = null;
+            leavingCustomer.releaseTable(this);
         }
     }
 
-    //Empty table will have null value
-    public void freeTable() {
-        this.customer = null;
-    }
-
-    // allow for override to display different information later on
     @Override
     public String toString() {
         if (isOccupied()) {
-            return "Table " + tableNumber +
-                   " (Occupied by Customer " +
-                   customer.getCustomerId() + ")";
+            return "Table " + tableNumber
+                    + " (Occupied by Customer "
+                    + customer.getCustomerId() + ")";
         }
         return "Table " + tableNumber + " (Available)";
     }

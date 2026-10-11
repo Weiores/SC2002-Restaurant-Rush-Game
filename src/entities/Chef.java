@@ -1,4 +1,5 @@
 package entities;
+import java.util.Objects;
 
 // advance one selected order by one
 public final class Chef extends Staff {

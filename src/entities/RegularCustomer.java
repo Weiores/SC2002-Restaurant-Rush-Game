@@ -1,5 +1,15 @@
 package entities;
 
-public class RegularCustomer extends Customer{
-    
+public final class RegularCustomer extends Customer {
+
+    private static final int SATISFACTION_LOSS_PER_TURN = 8;
+
+    public RegularCustomer(int arrivalTurn) {
+        super(arrivalTurn);
+    }
+
+    @Override
+    public int getSatisfactionLoss() {
+        return SATISFACTION_LOSS_PER_TURN;
+    }
 }

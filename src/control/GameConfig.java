@@ -26,7 +26,7 @@ public class GameConfig {
     public Customer returnCustomerthisTurn(int turn){
         if(Arrays.asList(TURNS).contains(turn)){
             // waiting for Customer fields to be implemented, needs satisfaction, name/id, status from CustomerStatus, arrivalTurn, readytoPayTurn, nextCustomerID
-            return new RegularCustomer();
+            return new RegularCustomer(nextCustomerID);
         }
         return null;
     }

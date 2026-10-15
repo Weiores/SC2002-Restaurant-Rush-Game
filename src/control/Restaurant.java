@@ -55,7 +55,7 @@ public class Restaurant {
     public List<Customer> getSeatedWithoutOrder(){
         List<Customer> seatedCustomers = new ArrayList<>();
         for(Table t : tables){
-            if(t.isOccupied() && t.getCustomer().getStatus() == CustomerStatus.SEATED){
+            if(t.isOccupied() && t.getCustomer().getStatus() == CustomerStatus.SEATED && getOrderFor(t.getCustomer()) == null){
                 seatedCustomers.add(t.getCustomer());
             }
         }
@@ -84,15 +84,92 @@ public class Restaurant {
         return orderstoPrep;
     }
 
-    //get customers who have eaten but havent paid
-    public List<Customer> getEatenCustomers(){
+    //get customers who are eating
+    public List<Customer> getEatingCustomers(){
         List<Customer> eatenCustomers = new ArrayList<>();
         for(Table t : tables){
-            if(t.getCustomer().getStatus() == CustomerStatus.SERVED){
+            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.SERVED){
                 eatenCustomers.add(t.getCustomer());
             }
         }
         return eatenCustomers;
     }
 
+    public List<Customer> getReadytoPayCustomers(){
+        List<Customer> readytoPayCustomers = new ArrayList<>();
+        for(Table t: tables){
+            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.READY_TO_PAY){
+                readytoPayCustomers.add(t.getCustomer());
+            }
+        }
+        readytoPayCustomers.sort(Comparator.comparingInt(Customer::getReadyToPayTurn).thenComparingInt(Customer::getArrivalTurn));
+        return readytoPayCustomers;
+    }
+
+    public List<Customer> getCustomersLosingSatisfaction(){
+        List<Customer> satisfactionList = new ArrayList<>();
+        for(Table t : tables){
+            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.SEATED){
+                satisfactionList.add(t.getCustomer());
+            }
+        }
+        satisfactionList.addAll(waitingQueue);
+        return satisfactionList;
+    }
+
+    public Order getOrderFor(Customer c){
+        return c.getOrder();
+    }
+
+    public Table getTableOf(Customer c){
+        return c.getTable();
+    }
+
+    public int getRevenueCents(){
+        return revenueCents;
+    }
+
+    public int getServedCount() {
+        return servedCount;
+    }
+
+    public int getUnhappyDepartures() {
+        return unhappyDepartures;
+    }
+
+    public int getPaidCount() {
+        return paidSatisfactions.size();
+    }
+
+    public OptionalDouble getAverageSatisfaction(){
+        if(paidSatisfactions.isEmpty()){
+            return OptionalDouble.empty();
+        }
+        int sum = 0;
+        for(int s : paidSatisfactions){
+            sum += s;
+        }
+        return OptionalDouble.of((double) sum / paidSatisfactions.size());
+    }
+
+    public void addToQueue(Customer c){
+        waitingQueue.add(c);
+    }
+
+    public Waiter getWaiter() {
+        return waiter;
+    }
+
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public Chef getChef() {
+        return chef;
+    }
+
+    public List<Staff> getAllStaff(){
+        return List.of(waiter, chef, cashier);
+    }
 }
+

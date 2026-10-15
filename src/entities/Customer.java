@@ -186,7 +186,7 @@ public abstract class Customer {
     public CustomerStatus getStatus() {
         return status;
     }
-
+    //TODO: ask if want to change so that getters for orders go through restaurant only, if not need update 2 classes per action method
     public Order getOrder() {
         return order;
     }

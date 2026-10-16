@@ -13,7 +13,7 @@ public class GameConfig {
     //use Integer because Arrays library accepts Objects instead of primitive types
     private final static Integer[] TURNS = {1, 4, 7, 10, 13, 16};
     //counter to keep track of next customer id
-    private int nextCustomerID = 1;
+
 
     //generate randomness for customer orders
     private final long seed;
@@ -26,7 +26,7 @@ public class GameConfig {
     public Customer returnCustomerthisTurn(int turn){
         if(Arrays.asList(TURNS).contains(turn)){
             // waiting for Customer fields to be implemented, needs satisfaction, name/id, status from CustomerStatus, arrivalTurn, readytoPayTurn, nextCustomerID
-            return new RegularCustomer(nextCustomerID);
+            return new RegularCustomer(turn);
         }
         return null;
     }

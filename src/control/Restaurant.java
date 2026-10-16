@@ -2,6 +2,8 @@ package control;
 import entities.*;
 import java.util.*;
 
+import javax.swing.Action;
+
 public class Restaurant {
     private final Queue<Customer> waitingQueue = new LinkedList<>();    //use queue for fcfs ordering
     private final List<Order> activeOrders = new ArrayList<>();
@@ -170,6 +172,31 @@ public class Restaurant {
 
     public List<Staff> getAllStaff(){
         return List.of(waiter, chef, cashier);
+    }
+
+    //action methods
+    public ActionResult seatCustomer(Customer c, Table t){
+        if(!waitingQueue.contains(c)){
+            return new ActionResult(false, c.getCustomerId() + " is not in waiting queue.");
+        }
+        if(t.isOccupied()){
+            return new ActionResult(false, "Table " + t.getTableNumber() + "is already occupied.");
+        }
+
+        waitingQueue.remove(c);
+        t.seatCustomer(c);
+        c.markSeated(t);
+        return new ActionResult(true, c.getCustomerId() + " seated at table " + t.getTableNumber());
+    }
+
+    public ActionResult takeOrder(Customer c, Random rng){
+        if(c.getStatus() != CustomerStatus.SEATED){
+            return new ActionResult(false, "Customer " + c.getCustomerId() + " is not seated yet.");
+        }
+        if(c.getOrder() != null){
+            return new ActionResult(false, "Customer " + c.getCustomerId() + " already has an order.");
+        }
+        c.
     }
 }
 

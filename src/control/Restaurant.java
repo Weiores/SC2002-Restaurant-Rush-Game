@@ -239,6 +239,7 @@ public class Restaurant {
         if(t != null){
             t.freeTable();
         }
+        //TODO: ask to move ConsoleUI's formatMoney method into a shared class for control classes to utilise as well
         return "Customer " + c.getCustomerId() + " paid " + bill + ".";
     }
 

@@ -1,6 +1,8 @@
 package entities;
 
 import java.util.Objects;
+import java.util.List;
+import java.util.Random;
 
 public abstract class Customer {
 
@@ -86,6 +88,11 @@ public abstract class Customer {
 
         this.table = Objects.requireNonNull(assignedTable);
         this.status = CustomerStatus.SEATED;
+    }
+
+    //choosing menuitem for control class
+    public MenuItem chooseMenuItem(List<MenuItem> menu, Random rng) {
+    return menu.get(rng.nextInt(menu.size()));
     }
 
     //Take order when they are seated
@@ -186,7 +193,7 @@ public abstract class Customer {
     public CustomerStatus getStatus() {
         return status;
     }
-    //TODO: ask if want to change so that getters for orders go through restaurant only, if not need update 2 classes per action method
+    //TODO: ask if want to change so that getters for orders go through restaurant only, if not need update 2 classes per action
     public Order getOrder() {
         return order;
     }

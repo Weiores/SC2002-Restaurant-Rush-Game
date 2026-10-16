@@ -230,7 +230,7 @@ public class Restaurant {
         return new ActionResult(true, o.getMenuItem().getName() + " successfully served to Customer " + o.getCustomer().getCustomerId());
     }
 
-    public void processPayment(Customer c, int currentTurn){
+    public String processPayment(Customer c, int currentTurn){
         int bill = c.markPaid(currentTurn);
         revenueCents += bill;
         paidSatisfactions.add(c.getSatisfactionAtPayment());
@@ -239,17 +239,19 @@ public class Restaurant {
         if(t != null){
             t.freeTable();
         }
-        //TODO: check if need to return String for customer paying how much, or if UI will handle that
+        return "Customer " + c.getCustomerId() + " paid " + bill + ".";
     }
 
-    public void applyEndOfTurn(Customer c){
+    public boolean processEndOfTurn(Customer c){
         if(c.applyEndOfTurn()){
             waitingQueue.remove(c);
             if(c.getOrder() != null){
                 activeOrders.remove(c.getOrder());
             }
             unhappyDepartures++;
+            return true;
         }
+        return false;
     }
 }
 

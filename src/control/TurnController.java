@@ -50,7 +50,7 @@ public class TurnController {
         Customer c = config.returnCustomerthisTurn(currentTurn);
         if(c != null){
             restaurant.addToQueue(c);
-            ui.showArrival("Customer " + c.getCustomerId() + " has arrived.");
+            ui.showArrival("Customer " + c.getCustomerId());
         }
     }
 
@@ -107,7 +107,7 @@ public class TurnController {
 
         //cook method
         for(Order o : restaurant.getOrdersinPrep()){
-            actions.put(new MenuOption("COOK " + o.getOrderId(), "Chef is now cooking " + o.getMenuItem().getName() + " for Customer " + o.getCustomer().getCustomerId() + " (" + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + ") units done."), ()->restaurant.advanceOrder(o, currentTurn));
+            actions.put(new MenuOption("COOK " + o.getOrderId(), "Cook " + o.getMenuItem().getName() + " for Customer " + o.getCustomer().getCustomerId() + " (" + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + "units done)."), ()->restaurant.advanceOrder(o, currentTurn));
         }
         actions.put(new MenuOption("WAIT", "Wait"), null);
         return actions;
@@ -126,7 +126,7 @@ public class TurnController {
             Supplier<ActionResult> action = actions.get(choice);
 
             if(action == null){
-                ui.showEvent("the Chef Waits.");
+                ui.showEvent("the Chef waits.");
                 return;
             }
 
@@ -142,7 +142,7 @@ public class TurnController {
         }
     }
 
-    public void eatingAndPayment(){
+    private void eatingAndPayment(){
         for(Customer c : restaurant.getEatingCustomers()){
             if(c.finishEating(currentTurn)){
                 ui.showEvent("Customer " + c.getCustomerId() + " has finished eating and is ready to pay.");
@@ -162,7 +162,6 @@ public class TurnController {
         for(Customer c : restaurant.getCustomersLosingSatisfaction()){
             if(restaurant.processEndOfTurn(c)){
                 ui.showEvent("Customer " + c.getCustomerId() + " ran out of patience and left.");
-                return;
             }
         }
     }
@@ -201,7 +200,7 @@ public class TurnController {
             ? "no order"
             : o.getMenuItem().getName() + " " + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + " (" + o.getStatus() + ")";
 
-            lines.add("Customer " + c.getCustomerId() + "| Satisfaction: " + c.getSatisfaction() + " | " + c.getStatus() + " | " + order);
+            lines.add("Customer " + c.getCustomerId() + " | Satisfaction: " + c.getSatisfaction() + " | " + c.getStatus() + " | " + order);
         }
         return lines;
     }

@@ -22,18 +22,22 @@ public class TurnController {
     }
 
     public void run(){
+        ui.showWelcome(config.getSeed());
         for(currentTurn = 1; currentTurn <= GameConfig.MAX_TURNS; currentTurn++){
             playTurn();
         }
+        ui.showFinalResult(checkVictory(), GameConfig.MAX_TURNS, restaurant.getServedCount(), restaurant.getPaidCount(), restaurant.getUnhappyDepartures(), restaurant.getRevenueCents(), averageOrNull());
     }
 
     private void playTurn(){
         resetStaff();
         handleArrivals();
+        ui.showTurnStart(currentTurn, GameConfig.MAX_TURNS, restaurant.getRevenueCents(), averageOrNull(), waitingQueueLine(), occupiedTableLine(), customerStateLine());
         waiterPhase();
         chefPhase();
         eatingAndPayment();
         endOfTurnDecay();
+        ui.showTurnResults(currentTurn, restaurant.getServedCount(), restaurant.getPaidCount(), restaurant.getUnhappyDepartures(), restaurant.getRevenueCents(), averageOrNull());
     }
 
     private void resetStaff(){
@@ -46,6 +50,7 @@ public class TurnController {
         Customer c = config.returnCustomerthisTurn(currentTurn);
         if(c != null){
             restaurant.addToQueue(c);
+            ui.showArrival("Customer " + c.getCustomerId() + " has arrived.");
         }
     }
 
@@ -162,6 +167,52 @@ public class TurnController {
         }
     }
 
+    //setting up for showTurnStart method, which will display the waitingQueue and averageSatisfaction each turn
+    //requires helper functions
 
+    private List<String> waitingQueueLine(){
+        List<String> lines = new ArrayList<>();
+        for(Customer c : restaurant.getWaitingQueue()){
+            lines.add("Customer " + c.getCustomerId() + " (Satisfaction: " + c.getSatisfaction() + ")");
+        }
+        return lines;
+    }
 
+    private List<String> occupiedTableLine(){
+        List<String> lines = new ArrayList<>();
+        for(Table t: restaurant.getTables()){
+            if(t.isOccupied()){
+                lines.add("Table " + t.getTableNumber() + ": Customer " + t.getCustomer().getCustomerId());
+            }
+        }
+        return lines;
+    }
+
+    private List<String> customerStateLine(){
+        List<String> lines = new ArrayList<>();
+        for(Table t : restaurant.getTables()){
+            if(!t.isOccupied()){
+                continue;
+            }
+            Customer c = t.getCustomer();
+            Order o = t.getCustomer().getOrder();
+
+            String order = (o==null)
+            ? "no order"
+            : o.getMenuItem().getName() + " " + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + " (" + o.getStatus() + ")";
+
+            lines.add("Customer " + c.getCustomerId() + "| Satisfaction: " + c.getSatisfaction() + " | " + c.getStatus() + " | " + order);
+        }
+        return lines;
+    }
+
+    private Double averageOrNull() {
+        OptionalDouble avg = restaurant.getAverageSatisfaction();
+        return avg.isPresent() ? avg.getAsDouble() : null;
+    }
+    
+    private boolean checkVictory() {
+        Double avg = averageOrNull();
+        return restaurant.getPaidCount() >= GameConfig.TARGET_PAID && restaurant.getRevenueCents() >= GameConfig.TARGET_REVENUE && avg != null && avg >= GameConfig.TARGET_AVG_SATISFACTION;
+    }
 }

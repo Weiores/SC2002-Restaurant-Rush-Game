@@ -2,7 +2,6 @@ package control;
 import entities.*;
 import java.util.*;
 
-import javax.swing.Action;
 
 public class Restaurant {
     private final Queue<Customer> waitingQueue = new LinkedList<>();    //use queue for fcfs ordering
@@ -90,7 +89,7 @@ public class Restaurant {
     public List<Customer> getEatingCustomers(){
         List<Customer> eatenCustomers = new ArrayList<>();
         for(Table t : tables){
-            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.SERVED){
+            if(t.isOccupied() && t.getCustomer().getStatus() == CustomerStatus.SERVED){
                 eatenCustomers.add(t.getCustomer());
             }
         }
@@ -100,7 +99,7 @@ public class Restaurant {
     public List<Customer> getReadytoPayCustomers(){
         List<Customer> readytoPayCustomers = new ArrayList<>();
         for(Table t: tables){
-            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.READY_TO_PAY){
+            if(t.isOccupied() && t.getCustomer().getStatus() == CustomerStatus.READY_TO_PAY){
                 readytoPayCustomers.add(t.getCustomer());
             }
         }
@@ -111,7 +110,7 @@ public class Restaurant {
     public List<Customer> getCustomersLosingSatisfaction(){
         List<Customer> satisfactionList = new ArrayList<>();
         for(Table t : tables){
-            if(t.isOccupied() || t.getCustomer().getStatus() == CustomerStatus.SEATED){
+            if(t.isOccupied() && t.getCustomer().getStatus() == CustomerStatus.SEATED){
                 satisfactionList.add(t.getCustomer());
             }
         }
@@ -185,18 +184,72 @@ public class Restaurant {
 
         waitingQueue.remove(c);
         t.seatCustomer(c);
-        c.markSeated(t);
         return new ActionResult(true, c.getCustomerId() + " seated at table " + t.getTableNumber());
     }
 
-    public ActionResult takeOrder(Customer c, Random rng){
+    public ActionResult takeOrder(Customer c, Random rng, int currentTurn){
         if(c.getStatus() != CustomerStatus.SEATED){
             return new ActionResult(false, "Customer " + c.getCustomerId() + " is not seated yet.");
         }
         if(c.getOrder() != null){
             return new ActionResult(false, "Customer " + c.getCustomerId() + " already has an order.");
         }
-        c.
+        
+        MenuItem choice = c.chooseMenuItem(menu, rng);
+        Order order = new Order(c, choice, currentTurn);
+        c.attachOrder(order);
+        activeOrders.add(order);
+
+        //TODO: ask to move ConsoleUI's formatMoney method into a shared class for control classes to utilise as well
+        return new ActionResult(true, "Customer " + c.getCustomerId() + " has ordered " + choice.getName() + " (" + order.getPriceCents() + ").");
+    }
+
+    public ActionResult advanceOrder(Order o, int currentTurn){
+        if(o.getStatus() != OrderStatus.ORDERED){
+            return new ActionResult(false, "This order is not being prepared.");
+        }
+        boolean ready = o.advancePreparation(currentTurn);
+
+        if(ready){
+            return new ActionResult(true, "Order for " + o.getCustomer().getCustomerId() + " is READY to serve.");
+        }
+        else{
+            return new ActionResult(true, o.getOrderId() + " for Customer " + o.getCustomer().getCustomerId() + ": " + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + " units done.");
+        }
+    }
+
+    public ActionResult serveOrder(Order o, int currentTurn){
+        if(o.getStatus() != OrderStatus.READY){
+            return new ActionResult(false, "Order " + o.getOrderId() + " is not ready yet.");
+        }
+        if(o.getReadyTurn() >= currentTurn){
+            return new ActionResult(false, "Dish was finished this turn. Serve it next turn");
+        }
+        o.getCustomer().markServed(currentTurn);
+        servedCount++;
+        return new ActionResult(true, o.getMenuItem().getName() + " successfully served to Customer " + o.getCustomer().getCustomerId());
+    }
+
+    public void processPayment(Customer c, int currentTurn){
+        int bill = c.markPaid(currentTurn);
+        revenueCents += bill;
+        paidSatisfactions.add(c.getSatisfactionAtPayment());
+        activeOrders.remove(c.getOrder());
+        Table t = c.getTable();
+        if(t != null){
+            t.freeTable();
+        }
+        //TODO: check if need to return String for customer paying how much, or if UI will handle that
+    }
+
+    public void applyEndOfTurn(Customer c){
+        if(c.applyEndOfTurn()){
+            waitingQueue.remove(c);
+            if(c.getOrder() != null){
+                activeOrders.remove(c.getOrder());
+            }
+            unhappyDepartures++;
+        }
     }
 }
 

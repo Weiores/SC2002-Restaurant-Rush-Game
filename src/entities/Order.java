@@ -1,11 +1,9 @@
 package entities;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 public final class Order {
-    private static final AtomicInteger GENERATED_IDS = new AtomicInteger(1);
+    private static int generatedIds = 1;
 
     private final int orderId;
     private final Customer customer;
@@ -26,8 +24,9 @@ public final class Order {
         if (createdTurn < 0) {
             throw new IllegalArgumentException("createdTurn cannot be negative");
         }
+
         this.orderId = orderId;
-        GENERATED_IDS.updateAndGet(nextId -> Math.max(nextId, orderId + 1));
+        generatedIds = Math.max(generatedIds, orderId + 1);
         this.customer = Objects.requireNonNull(customer, "customer cannot be null");
         this.menuItem = Objects.requireNonNull(menuItem, "menuItem cannot be null");
         this.priceCents = menuItem.getPriceCents();
@@ -42,7 +41,7 @@ public final class Order {
     }
 
     static int nextGeneratedId() {
-        return GENERATED_IDS.getAndIncrement();
+        return generatedIds++;
     }
 
     /** Performs one preparation unit and reports whether it is now ready. */
@@ -53,6 +52,7 @@ public final class Order {
         if (turn < createdTurn) {
             throw new IllegalArgumentException("preparation turn cannot precede the order");
         }
+
         completedPreparationUnits++;
         if (completedPreparationUnits == requiredPreparationUnits) {
             status = OrderStatus.READY;
@@ -67,8 +67,10 @@ public final class Order {
             throw new IllegalStateException("only a ready order can be served");
         }
         if (turn <= readyTurn) {
-            throw new IllegalStateException("an order cannot be served on the turn it becomes ready");
+            throw new IllegalStateException(
+                    "an order cannot be served on the turn it becomes ready");
         }
+
         status = OrderStatus.SERVED;
         servedTurn = turn;
     }
@@ -78,15 +80,18 @@ public final class Order {
             throw new IllegalStateException("only a served order can be paid");
         }
         if (turn <= servedTurn) {
-            throw new IllegalStateException("customer must eat for a full turn before paying");
+            throw new IllegalStateException(
+                    "customer must eat for a full turn before paying");
         }
+
         status = OrderStatus.PAID;
         paidTurn = turn;
     }
 
     public void cancel() {
         if (status == OrderStatus.PAID || status == OrderStatus.CANCELLED) {
-            throw new IllegalStateException("paid or cancelled order cannot be cancelled again");
+            throw new IllegalStateException(
+                    "paid or cancelled order cannot be cancelled again");
         }
         status = OrderStatus.CANCELLED;
     }

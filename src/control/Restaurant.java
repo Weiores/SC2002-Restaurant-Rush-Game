@@ -1,5 +1,6 @@
 package control;
 import entities.*;
+import util.MoneyFormatter;
 import java.util.*;
 
 
@@ -200,8 +201,7 @@ public class Restaurant {
         c.attachOrder(order);
         activeOrders.add(order);
 
-        //TODO: ask to move ConsoleUI's formatMoney method into a shared class for control classes to utilise as well
-        return new ActionResult(true, "Customer " + c.getCustomerId() + " has ordered " + choice.getName() + " (" + order.getPriceCents() + ").");
+        return new ActionResult(true, "Customer " + c.getCustomerId() + " has ordered " + choice.getName() + " (" + MoneyFormatter.format(order.getPriceCents()) + ").");
     }
 
     public ActionResult advanceOrder(Order o, int currentTurn){
@@ -239,8 +239,7 @@ public class Restaurant {
         if(t != null){
             t.freeTable();
         }
-        //TODO: ask to move ConsoleUI's formatMoney method into a shared class for control classes to utilise as well
-        return "Customer " + c.getCustomerId() + " paid " + bill + ".";
+        return "Customer " + c.getCustomerId() + " paid " + MoneyFormatter.format(bill) + ".";
     }
 
     public boolean processEndOfTurn(Customer c){
@@ -255,4 +254,3 @@ public class Restaurant {
         return false;
     }
 }
-

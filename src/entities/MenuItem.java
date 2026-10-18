@@ -1,24 +1,27 @@
 package entities;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public final class MenuItem {
     public static final MenuItem SALAD = new MenuItem("Salad", 900, 1);
     public static final MenuItem BURGER = new MenuItem("Burger", 1500, 1);
     public static final MenuItem PASTA = new MenuItem("Pasta", 1800, 2);
 
-    private static final List<MenuItem> STAGE_ONE_MENU = Collections.unmodifiableList(
-            Arrays.asList(SALAD, BURGER, PASTA));
+    private static final List<MenuItem> STAGE_ONE_MENU =
+            Arrays.asList(SALAD, BURGER, PASTA);
 
     private final String name;
     private final int priceCents;
     private final int preparationUnits;
 
     public MenuItem(String name, int priceCents, int preparationUnits) {
-        this.name = Objects.requireNonNull(name, "name cannot be null").trim();
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be null");
+        }
+
+        this.name = name.trim();
+
         if (this.name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be blank");
         }
@@ -28,6 +31,7 @@ public final class MenuItem {
         if (preparationUnits < 1) {
             throw new IllegalArgumentException("preparation units must be positive");
         }
+
         this.priceCents = priceCents;
         this.preparationUnits = preparationUnits;
     }
@@ -40,12 +44,10 @@ public final class MenuItem {
         return name;
     }
 
-    // Returns the price in integer cents. 
     public int getPriceCents() {
         return priceCents;
     }
 
-    // Alias retained for compatibility with the supplied starter class. 
     public int getPrice() {
         return priceCents;
     }
@@ -54,7 +56,6 @@ public final class MenuItem {
         return preparationUnits;
     }
 
-    // Alias retained for compatibility with the supplied starter class. 
     public int getPrepUnits() {
         return preparationUnits;
     }

@@ -35,6 +35,10 @@ public abstract class Customer {
 
     public abstract int getSatisfactionLoss();
 
+    public int getPriceCents(MenuItem menuItem) {
+        return menuItem.getPriceCents();
+    }
+
     /**
      * Applies satisfaction loss at end of turn.
      * Returns true if customer leaves.

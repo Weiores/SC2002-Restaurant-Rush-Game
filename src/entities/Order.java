@@ -29,7 +29,7 @@ public final class Order {
         generatedIds = Math.max(generatedIds, orderId + 1);
         this.customer = Objects.requireNonNull(customer, "customer cannot be null");
         this.menuItem = Objects.requireNonNull(menuItem, "menuItem cannot be null");
-        this.priceCents = menuItem.getPriceCents();
+        this.priceCents = customer.getPriceCents(menuItem);
         this.requiredPreparationUnits = menuItem.getPreparationUnits();
         this.createdTurn = createdTurn;
         this.completedPreparationUnits = 0;

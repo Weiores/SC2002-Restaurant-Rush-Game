@@ -45,6 +45,24 @@ public final class ControlUI {
         output.println("Game seed: " + seed);
     }
 
+    /**
+     * Creates a label for any customer type without checking subclasses here.
+     * Examples: Regular Customer 1, VIP Customer 2, Critic Customer 3.
+     */
+    public static String formatCustomerLabel(
+            int customerId,
+            String customerType) {
+
+        if (customerId < 1) {
+            throw new IllegalArgumentException(
+                    "customerId must be positive");
+        }
+
+        return requireText(customerType, "customerType").trim()
+                + " Customer "
+                + customerId;
+    }
+
     /*
      * Displays all information required at the beginning of a turn.
      *
@@ -152,6 +170,16 @@ public final class ControlUI {
                                 "customerDescription"));
     }
 
+    /**
+     * Stage 2 overload for displaying Regular, VIP and Critic arrivals.
+     */
+    public void showArrival(
+            int customerId,
+            String customerType) {
+
+        showArrival(formatCustomerLabel(customerId, customerType));
+    }
+
     /*
      * Call this after the domain/controller has selected the
      * customer's food and created the order.
@@ -164,16 +192,77 @@ public final class ControlUI {
             int lockedPriceCents,
             int preparationUnits) {
 
+        showOrderPlaced(
+                customerDescription,
+                menuItemName,
+                lockedPriceCents,
+                lockedPriceCents,
+                preparationUnits);
+    }
+
+    /**
+     * Displays a domain-calculated price, including a VIP discount when the
+     * base and charged prices differ. No discount is calculated in the UI.
+     */
+    public void showOrderPlaced(
+            String customerDescription,
+            String menuItemName,
+            int basePriceCents,
+            int chargedPriceCents,
+            int preparationUnits) {
+
+        String customer = requireText(
+                customerDescription,
+                "customerDescription");
+        String menuItem = requireText(
+                menuItemName,
+                "menuItemName");
+
         output.printf(
-                "%s chose %s. Price: %s. Preparation units: %d.%n",
+                "%s chose %s. Preparation units: %d.%n",
+                customer,
+                menuItem,
+                preparationUnits);
+
+        if (basePriceCents == chargedPriceCents) {
+            output.println(
+                    "Price: " + formatMoney(chargedPriceCents));
+        } else {
+            output.println(
+                    "Menu price: " + formatMoney(basePriceCents));
+            output.println(
+                    "Charged price: " + formatMoney(chargedPriceCents));
+        }
+    }
+
+    /**
+     * Displays a behavior message produced by a customer/domain object.
+     */
+    public void showCustomerBehaviour(
+            String customerDescription,
+            String behaviourMessage) {
+
+        output.println(
                 requireText(
                         customerDescription,
-                        "customerDescription"),
+                        "customerDescription")
+                        + ": "
+                        + requireText(
+                                behaviourMessage,
+                                "behaviourMessage"));
+    }
+
+    public void showPayment(
+            String customerDescription,
+            int amountPaidCents) {
+
+        output.println(
                 requireText(
-                        menuItemName,
-                        "menuItemName"),
-                formatMoney(lockedPriceCents),
-                preparationUnits);
+                        customerDescription,
+                        "customerDescription")
+                        + " paid "
+                        + formatMoney(amountPaidCents)
+                        + ".");
     }
 
     public void showEvent(String message) {

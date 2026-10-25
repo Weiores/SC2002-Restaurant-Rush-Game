@@ -17,4 +17,9 @@ public final class VIPCustomer extends Customer {
     public int getPriceCents(MenuItem menuItem) {
         return menuItem.getPriceCents() * 90 / 100;
     }
+
+    @Override 
+    public String getTypeName(){
+        return "VIP";
+    }
 }

@@ -217,4 +217,6 @@ public abstract class Customer {
     public int getSatisfactionAtPayment() {
         return satisfactionAtPayment;
     }
+
+    public abstract String getTypeName();
 }

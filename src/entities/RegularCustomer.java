@@ -12,4 +12,9 @@ public final class RegularCustomer extends Customer {
     public int getSatisfactionLoss() {
         return SATISFACTION_LOSS_PER_TURN;
     }
+
+    @Override 
+    public String getTypeName(){
+        return "Regular";
+    }
 }

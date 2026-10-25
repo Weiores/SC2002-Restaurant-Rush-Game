@@ -1,4 +1,6 @@
 package entities;
+import java.util.List;
+import java.util.Random;
 
 public final class CriticCustomer extends Customer {
 
@@ -16,5 +18,16 @@ public final class CriticCustomer extends Customer {
     @Override 
     public String getTypeName(){
         return "Critic";
+    }
+
+    @Override 
+    public MenuItem chooseMenuItem(List<MenuItem> menu, Random rng){
+        MenuItem best = menu.get(0);
+        for(MenuItem item : menu){
+            if(item.getPriceCents() > best.getPriceCents()){
+                best = item;
+            }
+        }
+        return best;
     }
 }

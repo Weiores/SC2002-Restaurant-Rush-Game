@@ -1,6 +1,9 @@
 package control;
+import entities.CriticCustomer;
 import entities.Customer;
 import entities.RegularCustomer;
+import entities.VIPCustomer;
+
 import java.util.Arrays;
 
 public class GameConfig {
@@ -25,7 +28,15 @@ public class GameConfig {
     //function to return the customer of the current turn, null if none
     public Customer returnCustomerthisTurn(int turn){
         if(Arrays.asList(TURNS).contains(turn)){
-            return new RegularCustomer(turn);
+            if(turn == 10){
+                return new CriticCustomer(turn);
+            }
+            if(turn == 4){
+                return new VIPCustomer(turn);
+            }
+            else{
+                return new RegularCustomer(turn);
+            }
         }
         return null;
     }

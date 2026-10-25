@@ -1,6 +1,9 @@
 package control;
+import entities.CriticCustomer;
 import entities.Customer;
 import entities.RegularCustomer;
+import entities.VIPCustomer;
+
 import java.util.Arrays;
 
 public class GameConfig {
@@ -13,7 +16,7 @@ public class GameConfig {
     //use Integer because Arrays library accepts Objects instead of primitive types
     private final static Integer[] TURNS = {1, 4, 7, 10, 13, 16};
     //counter to keep track of next customer id
-    private int nextCustomerID = 1;
+
 
     //generate randomness for customer orders
     private final long seed;
@@ -25,8 +28,15 @@ public class GameConfig {
     //function to return the customer of the current turn, null if none
     public Customer returnCustomerthisTurn(int turn){
         if(Arrays.asList(TURNS).contains(turn)){
-            // waiting for Customer fields to be implemented, needs satisfaction, name/id, status from CustomerStatus, arrivalTurn, readytoPayTurn, nextCustomerID
-            return new RegularCustomer();
+            if(turn == 10){
+                return new CriticCustomer(turn);
+            }
+            if(turn == 4){
+                return new VIPCustomer(turn);
+            }
+            else{
+                return new RegularCustomer(turn);
+            }
         }
         return null;
     }

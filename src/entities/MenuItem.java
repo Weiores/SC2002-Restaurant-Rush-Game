@@ -1,28 +1,63 @@
-public class MenuItem {
+package entities;
 
-    private String name;
-    private int price;        // cents
-    private int prepUnits;
+import java.util.Arrays;
+import java.util.List;
 
-    public MenuItem(String name,
-                    int price,
-                    int prepUnits) {
+public final class MenuItem {
+    public static final MenuItem SALAD = new MenuItem("Salad", 900, 1);
+    public static final MenuItem BURGER = new MenuItem("Burger", 1500, 1);
+    public static final MenuItem PASTA = new MenuItem("Pasta", 1800, 2);
 
-        this.name = name;
-        this.price = price;
-        this.prepUnits = prepUnits;
+    private static final List<MenuItem> STAGE_ONE_MENU =
+            Arrays.asList(SALAD, BURGER, PASTA);
+
+    private final String name;
+    private final int priceCents;
+    private final int preparationUnits;
+
+    public MenuItem(String name, int priceCents, int preparationUnits) {
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be null");
+        }
+
+        this.name = name.trim();
+
+        if (this.name.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be blank");
+        }
+        if (priceCents < 0) {
+            throw new IllegalArgumentException("price cannot be negative");
+        }
+        if (preparationUnits < 1) {
+            throw new IllegalArgumentException("preparation units must be positive");
+        }
+
+        this.priceCents = priceCents;
+        this.preparationUnits = preparationUnits;
+    }
+
+    public static List<MenuItem> stageOneMenu() {
+        return STAGE_ONE_MENU;
     }
 
     public String getName() {
         return name;
     }
 
+    public int getPriceCents() {
+        return priceCents;
+    }
+
     public int getPrice() {
-        return price;
+        return priceCents;
+    }
+
+    public int getPreparationUnits() {
+        return preparationUnits;
     }
 
     public int getPrepUnits() {
-        return prepUnits;
+        return preparationUnits;
     }
 
     @Override

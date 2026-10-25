@@ -1,4 +1,6 @@
-# Restaurant Rush: Victory and Defeat Guide
+# Stage 1 Gameplay and Test Guide
+
+## Restaurant Rush: Victory and Defeat Guide
 
 This guide is based on the two sample game logs provided. The successful log uses **Game seed 42** and ends in victory after 18 turns. The defeat log also uses 18 turns, but the Waiter waits every turn and no dishes are served.
 

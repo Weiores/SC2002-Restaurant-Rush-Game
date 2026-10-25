@@ -50,7 +50,7 @@ public class TurnController {
         Customer c = config.returnCustomerthisTurn(currentTurn);
         if(c != null){
             restaurant.addToQueue(c);
-            ui.showArrival("Customer " + c.getCustomerId());
+            ui.showArrival("Customer " + c.getCustomerId() + " | Type: " + c.getTypeName());
         }
     }
 
@@ -61,7 +61,7 @@ public class TurnController {
         //seat method
         for(Customer c : restaurant.getWaitingQueue()){
             for(Table t : restaurant.getFreeTables()){
-                actions.put(new MenuOption("SEAT " + c.getCustomerId() + " : " + t.getTableNumber(), "Seat Customer " + c.getCustomerId() + " at Table " + t.getTableNumber()), () -> restaurant.seatCustomer(c, t));
+                actions.put(new MenuOption("SEAT " + c.getCustomerId() + " : " + t.getTableNumber(), "Seat Customer " + c.getCustomerId() + " (Type: " + c.getTypeName() + ") at Table " + t.getTableNumber()), () -> restaurant.seatCustomer(c, t));
             }
         }
 
@@ -172,7 +172,7 @@ public class TurnController {
     private List<String> waitingQueueLine(){
         List<String> lines = new ArrayList<>();
         for(Customer c : restaurant.getWaitingQueue()){
-            lines.add("Customer " + c.getCustomerId() + " (Satisfaction: " + c.getSatisfaction() + ")");
+            lines.add("Customer " + c.getCustomerId() + " | Type: " + c.getTypeName() + " (Satisfaction: " + c.getSatisfaction() + ")");
         }
         return lines;
     }
@@ -200,7 +200,7 @@ public class TurnController {
             ? "no order"
             : o.getMenuItem().getName() + " " + o.getCompletedPreparationUnits() + "/" + o.getRequiredPreparationUnits() + " (" + o.getStatus() + ")";
 
-            lines.add("Customer " + c.getCustomerId() + " | Satisfaction: " + c.getSatisfaction() + " | " + c.getStatus() + " | " + order);
+            lines.add("Customer " + c.getCustomerId() + " | Type: " + c.getTypeName() + " | Satisfaction: " + c.getSatisfaction() + " | " + c.getStatus() + " | " + order);
         }
         return lines;
     }

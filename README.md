@@ -25,4 +25,4 @@ Their different behaviours are handled through customer methods.
 
 ## Gameplay and Test Runs
 
-See the [Stage 1 Gameplay and Test Guide](Restaurant_Rush_Blueprint.md).
+See the [Stages Gameplay and Test Guide](Restaurant_Rush_Blueprint.md).

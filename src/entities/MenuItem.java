@@ -3,7 +3,7 @@ package entities;
 import java.util.Arrays;
 import java.util.List;
 
-public final class MenuItem {
+public class MenuItem {
     public static final MenuItem SALAD = new MenuItem("Salad", 900, 1);
     public static final MenuItem BURGER = new MenuItem("Burger", 1500, 1);
     public static final MenuItem PASTA = new MenuItem("Pasta", 1800, 2);
